@@ -1,4 +1,4 @@
-// Client for the Radarbox API. Get planes in the area
+// Client for the \R\a\d\a/r/b/o/x/ API. Get planes in the area
 // and metadata about each aircraft.
 package radar
 
