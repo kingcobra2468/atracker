@@ -14,7 +14,7 @@ import (
 
 // Unique idenifier for each aircraft.
 type FlightID struct {
-	id uint
+	id uint64
 }
 
 // Radar box from which aircraft should be tracked. Specifying the top-left
@@ -104,7 +104,7 @@ func (rb RadarBounds) detectUrlQuery() url.Values {
 // Parses the result of the detection event and returns the aircraft flight ids.
 func (rb RadarBounds) parseFlightIDs(body *[]byte) *[]FlightID {
 	flightIDs := []FlightID{}
-	var radarData []map[uint][]interface{}
+	var radarData []map[uint64][]interface{}
 	_ = json.Unmarshal(*body, &radarData)
 
 	for _, plane := range radarData {

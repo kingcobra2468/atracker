@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // Extracted flight metadata from the given live flight.
@@ -21,9 +22,9 @@ type AircraftData struct {
 }
 
 // Lookup a flight by the fid. Return various metadata about the live flight.
-func (rb RadarBounds) FlightInfo(fid string) (*AircraftData, error) {
+func (rb RadarBounds) FlightInfo(fid FlightID) (*AircraftData, error) {
 	queryArgs := url.Values{}
-	queryArgs.Add("fid", fid)
+	queryArgs.Add("fid", strconv.FormatUint(fid.id, 10))
 
 	scannerEndpoint := fmt.Sprintf("%s/%s?%s", apiDomainName, dataRoute, queryArgs.Encode())
 	req, err := http.NewRequest("GET", scannerEndpoint, nil)
