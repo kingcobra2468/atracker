@@ -1,0 +1,10 @@
+radarBounds:
+  topRightCords:
+    latitude: 0
+    longitude: 0
+  bottomLeftCords:
+    latitude: 0
+    longitude: 0
+planes:
+  - 'B757'
+  - 'B747'

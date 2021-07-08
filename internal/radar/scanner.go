@@ -18,12 +18,17 @@ type FlightID struct {
 	id string
 }
 
+type Cords struct {
+	Latitude  float64 `mapstructure:"latitude"`
+	Longitude float64 `mapstructure:"longitude"`
+}
+
 // Radar box from which aircraft should be tracked. Specifying the top-left
 // and bottom right cord of this box, all aircraft that are inside of it will be
 // observed and tracked.
 type RadarBounds struct {
-	LatTR, LongTR float64
-	LatBR, LongBR float64
+	TopRight   Cords
+	BottomLeft Cords
 }
 
 // Static headers that are required for the API to function properly.
@@ -95,7 +100,9 @@ func (rb RadarBounds) detectUrlQuery() url.Values {
 		"blocked":        {"false"},
 	})
 
-	bounds := fmt.Sprintf("%.3f,%.3f,%.3f,%.3f", rb.LatTR, rb.LongTR, rb.LatBR, rb.LongBR)
+	bounds := fmt.Sprintf(
+		"%.3f,%.3f,%.3f,%.3f", rb.TopRight.Latitude, rb.TopRight.Longitude, rb.BottomLeft.Latitude, rb.BottomLeft.Longitude,
+	)
 	queryArgs.Add("bounds", bounds)
 
 	return queryArgs
