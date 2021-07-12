@@ -8,20 +8,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func loadConfig() (*ptc.Config, error) {
-	viperTR := viper.Sub("radarBounds.topRightCords")
-	viperBL := viper.Sub("radarBounds.bottomLeftCords")
-
-	bounds, err := ptc.LoadBounds(viperTR, viperBL)
+func checkConfig() error {
+	err := ptc.CheckBounds()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	planes := viper.GetStringSlice("planes")
-	if err != nil {
-		return nil, errors.New("failed to get list of planes to filter by")
+	if planes := viper.GetStringSlice("planes"); len(planes) == 0 {
+		return errors.New("failed to get list of planes to filter by")
 	}
 
-	return &ptc.Config{Bounds: *bounds, Planes: planes}, nil
+	return nil
 }
 
 func main() {
@@ -33,8 +29,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	config, err := loadConfig()
-	if err != nil {
+	if err := checkConfig(); err != nil {
 		panic(err)
 	}
 }

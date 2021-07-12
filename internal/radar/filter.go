@@ -4,14 +4,17 @@ package radar
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
 // Callback function that is called each time an aircraft is
-// detected within the bounds
+// detected within the bounds.
 type onDetected func(fid FlightID, ad AircraftData)
 
-func (rb RadarBounds) TrackAll(done <-chan bool, od onDetected) {
+// Track all of the aircraft in the area and return the aircraft data
+// to a callback function that matches the onDetected signature.
+func (rb RadarBounds) TrackAll(done <-chan bool, prevCaptcha bool, od onDetected) {
 	ticker := time.NewTicker(time.Second * 10)
 	defer ticker.Stop()
 	concurrentDetections := make(chan struct{}, 5)
@@ -28,7 +31,13 @@ func (rb RadarBounds) TrackAll(done <-chan bool, od onDetected) {
 			}
 			for _, fid := range *flights {
 				concurrentDetections <- struct{}{}
-				go rb.processDetected(fid, concurrentDetections, od)
+				go func(fid FlightID, pCaptcha bool) {
+					if pCaptcha {
+						r := rand.Intn(10)
+						time.Sleep(time.Duration(r) * time.Second)
+					}
+					rb.processDetected(fid, concurrentDetections, od)
+				}(fid, prevCaptcha)
 			}
 		}
 	}
@@ -38,6 +47,11 @@ func (rb RadarBounds) TrackAll(done <-chan bool, od onDetected) {
 // callback around the worker pool.
 func (rb RadarBounds) processDetected(fid FlightID, hold <-chan struct{}, od onDetected) {
 	defer func() { <-hold }()
-	fi, _ := rb.FlightInfo(fid)
+	fi, err := rb.FlightInfo(fid)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	od(fid, *fi)
 }

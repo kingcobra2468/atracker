@@ -23,7 +23,7 @@ type AircraftData struct {
 // Lookup a flight by the fid. Return various metadata about the live flight.
 func (rb RadarBounds) FlightInfo(fid FlightID) (*AircraftData, error) {
 	queryArgs := url.Values{}
-	queryArgs.Add("fid", fid.id)
+	queryArgs.Add("fid", fid.ID)
 
 	scannerEndpoint := fmt.Sprintf("%s/%s?%s", apiDomainName, dataRoute, queryArgs.Encode())
 	req, err := http.NewRequest("GET", scannerEndpoint, nil)
@@ -41,6 +41,7 @@ func (rb RadarBounds) FlightInfo(fid FlightID) (*AircraftData, error) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	} else if string(body) == "null" { // check if the fid is valid

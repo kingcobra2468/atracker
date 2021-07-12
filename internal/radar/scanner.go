@@ -15,7 +15,7 @@ import (
 
 // Unique idenifier for each aircraft.
 type FlightID struct {
-	id string
+	ID string
 }
 
 type Cords struct {
