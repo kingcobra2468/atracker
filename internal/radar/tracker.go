@@ -29,6 +29,7 @@ func (rb RadarBounds) TrackAll(done <-chan bool, prevCaptcha bool, od onDetected
 				fmt.Println("unable to scan for aircraft")
 				continue
 			}
+			fmt.Println(flights)
 			for _, fid := range *flights {
 				concurrentDetections <- struct{}{}
 				go func(fid FlightID, pCaptcha bool) {

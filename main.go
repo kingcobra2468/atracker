@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 
+	"github.com/kingcobra2468/atracker/internal/cache"
 	ptc "github.com/kingcobra2468/atracker/internal/config"
+	"github.com/kingcobra2468/atracker/internal/filter"
 
 	"github.com/spf13/viper"
 )
@@ -13,7 +15,7 @@ func checkConfig() error {
 	if err != nil {
 		panic(err)
 	}
-	if planes := viper.GetStringSlice("planes"); len(planes) == 0 {
+	if planes := viper.GetStringSlice("aircraft"); len(planes) == 0 {
 		return errors.New("failed to get list of planes to filter by")
 	}
 
@@ -32,4 +34,10 @@ func main() {
 	if err := checkConfig(); err != nil {
 		panic(err)
 	}
+
+	cache.Connect(ptc.LoadRedisAddr())
+	filter.FetchAircraftFilter()
+	bounds := ptc.LoadBounds()
+	done := make(chan bool)
+	bounds.TrackAll(done, true, filter.FilterAircraft)
 }

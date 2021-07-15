@@ -41,7 +41,6 @@ func (rb RadarBounds) FlightInfo(fid FlightID) (*AircraftData, error) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	} else if string(body) == "null" { // check if the fid is valid

@@ -32,6 +32,13 @@ func LoadRedisAddr() string {
 	return fmt.Sprintf("%s:%d", addr, port)
 }
 
+// Read in all filter aircraft.
+func LoadAircraft() *[]string {
+	filter := viper.GetStringSlice("aircraft")
+
+	return &filter
+}
+
 // Pull cordinate data from the config file if it exists.
 func loadCords(v *viper.Viper) (*radar.Cords, error) {
 	var cord radar.Cords

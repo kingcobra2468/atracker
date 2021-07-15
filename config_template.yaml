@@ -5,7 +5,7 @@ radarBounds:
   bottomLeftCords:
     latitude: 0
     longitude: 0
-planes:
+aircraft:
   - 'B757'
   - 'B747'
 redis:
