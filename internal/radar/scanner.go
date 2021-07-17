@@ -4,6 +4,7 @@ package radar
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,15 +15,20 @@ import (
 
 // Unique idenifier for each aircraft.
 type FlightID struct {
-	id uint
+	ID string
+}
+
+type Cords struct {
+	Latitude  float64 `mapstructure:"latitude"`
+	Longitude float64 `mapstructure:"longitude"`
 }
 
 // Radar box from which aircraft should be tracked. Specifying the top-left
 // and bottom right cord of this box, all aircraft that are inside of it will be
 // observed and tracked.
 type RadarBounds struct {
-	LatTR, LongTR float64
-	LatBR, LongBR float64
+	TopRight   Cords
+	BottomLeft Cords
 }
 
 // Static headers that are required for the API to function properly.
@@ -60,10 +66,9 @@ func (rb RadarBounds) DetectFlights() (*[]FlightID, error) {
 	if err != nil {
 		return nil, err
 	}
+	flightIDs, err := rb.parseFlightIDs(&body)
 
-	flightIDs := rb.parseFlightIDs(&body)
-
-	return flightIDs, nil
+	return flightIDs, err
 }
 
 // Builds the url query for a aircraft detection requests. Sets the bounds and
@@ -95,23 +100,35 @@ func (rb RadarBounds) detectUrlQuery() url.Values {
 		"blocked":        {"false"},
 	})
 
-	bounds := fmt.Sprintf("%.3f,%.3f,%.3f,%.3f", rb.LatTR, rb.LongTR, rb.LatBR, rb.LongBR)
+	bounds := fmt.Sprintf(
+		"%.3f,%.3f,%.3f,%.3f", rb.TopRight.Latitude, rb.TopRight.Longitude, rb.BottomLeft.Latitude, rb.BottomLeft.Longitude,
+	)
 	queryArgs.Add("bounds", bounds)
 
 	return queryArgs
 }
 
 // Parses the result of the detection event and returns the aircraft flight ids.
-func (rb RadarBounds) parseFlightIDs(body *[]byte) *[]FlightID {
+func (rb RadarBounds) parseFlightIDs(body *[]byte) (*[]FlightID, error) {
 	flightIDs := []FlightID{}
-	var radarData []map[uint][]interface{}
+	var radarData []interface{}
 	_ = json.Unmarshal(*body, &radarData)
 
-	for _, plane := range radarData {
-		for fid := range plane {
-			flightIDs = append(flightIDs, FlightID{fid})
-		}
+	// parsing failed
+	if len(radarData) == 0 {
+		return &flightIDs, errors.New("radar data returned nothing")
 	}
 
-	return &flightIDs
+	// Get all the planes within radius. Will be under the first element in
+	// returned list of values.
+	planes, ok := radarData[0].(map[string]interface{})
+	if !ok {
+		return &flightIDs, errors.New("unable to get fids from radar data")
+	}
+
+	for fid, _ := range planes {
+		flightIDs = append(flightIDs, FlightID{fid})
+	}
+
+	return &flightIDs, nil
 }

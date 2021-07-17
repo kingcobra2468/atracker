@@ -1,0 +1,13 @@
+radarBounds:
+  topRightCords:
+    latitude: 0
+    longitude: 0
+  bottomLeftCords:
+    latitude: 0
+    longitude: 0
+aircraft:
+  - 'B757'
+  - 'B747'
+redis:
+  addr: '127.0.0.1'
+  port: 6379
