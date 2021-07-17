@@ -9,7 +9,7 @@ Once that is done, the following config options could be set:
 - **radarBounds.topRightCords.longitude=** longitude cordinate for top right edge of the bounds.
 - **radarBounds.bottomLeftCords.latitude=** latitude cordinate for bottom left edge of the bounds.
 - **radarBounds.bottomLeftCords.longitude=** longitude cordinate for bottom left edge of the bounds.
-- **aircraft** list of all special aircrafts to be filtered. All aircrafts in this list must be designated by their ICAO code.
+- **aircraft=** list of all special aircrafts to be filtered. All aircrafts in this list must be designated by their ICAO code.
 - **redis.addr=** the redis server address which will be used for caching flight ids.
 - **redis.port=** the redis server port which will be used for caching flight ids.
 
