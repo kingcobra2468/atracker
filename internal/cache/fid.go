@@ -63,7 +63,7 @@ func TrackNew(fid radar.FlightID) error {
 	return fidCache.rdb.Set(fidCache.ctx, fid.ID, fid.ID, dur).Err()
 }
 
-// Only cache and fid if it is not currently being cached.
+// Only cache a fid if it is not currently being cached.
 func TrackIfNew(fid radar.FlightID) error {
 	if fidCache == nil {
 		return errors.New("redis connection not established")

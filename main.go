@@ -10,6 +10,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Validation on whether the config is correct. Check to see
+// if cordinates are valid and if there exists at least one plane
+// that is being filtered.
 func checkConfig() error {
 	err := ptc.CheckBounds()
 	if err != nil {
